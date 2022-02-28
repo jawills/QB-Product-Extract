@@ -1,0 +1,7 @@
+refresh_token = ""
+access_token = ""
+client_id = ""
+client_secret = ""
+auth_url = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
+base_url = "https://quickbooks.api.intuit.com"
+company_id = ""
