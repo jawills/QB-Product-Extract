@@ -32,7 +32,7 @@ def query_helper(query):
     return response
 
 def main(access_token):
-    qb_object = 'Item'
+    qb_object = 'Vendor'
     limit = 1000
     query_count = f'select Count(*) from {qb_object} maxresults {limit}'
     count_response = query_helper(query_count)
@@ -45,7 +45,7 @@ def main(access_token):
 
     extra_runs = count_total // limit
     for i in range(extra_runs):
-        extra_query = f'select * from {qb_object} maxresults {limit} STARTPOSITION {i * limit}'
+        extra_query = f'select * from {qb_object} maxresults {limit} STARTPOSITION {(i+1) * limit}'
         extra_response = query_helper(extra_query)
         new_df = pd.read_json (json.dumps(extra_response.json()['QueryResponse'][qb_object]))
         df = pd.concat([df, new_df])
