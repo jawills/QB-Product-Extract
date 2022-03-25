@@ -16,21 +16,40 @@ def get_access_token():
                'Content-Type' : 'application/x-www-form-urlencoded'}
     response = requests.post(url, data=body, headers=headers)
     res_json = response.json()
+    if 'access_token' not in res_json:
+        print('Refresh Token Expired')
+        exit()
     return res_json['access_token']
 
-def main(access_token):
+def query_helper(query):
     resource = '/query'
-    query = 'select * from Item maxresults 1000'
     url = f'{config.base_url}/v3/company/{config.company_id}{resource}?minorversion=63'
     headers = {'Authorization' : f'Bearer {access_token}',
                 'Accept': 'application/json',
                 'Content-Type': 'application/text',
     }
     response = requests.post(url, headers=headers, data=query)
-    print(response.headers)
-    
-    df = pd.read_json (json.dumps(response.json()['QueryResponse']['Item']))
-    df.to_csv ('products.csv', index = None)
+    return response
+
+def main(access_token):
+    qb_object = 'Item'
+    limit = 1000
+    query_count = f'select Count(*) from {qb_object} maxresults {limit}'
+    count_response = query_helper(query_count)
+    count_total = count_response.json()['QueryResponse']['totalCount']
+    print(f'Total Count: {count_total}')
+
+    query = f'select * from {qb_object} maxresults {limit}'
+    inital_response = query_helper(query)
+    df = pd.read_json (json.dumps(inital_response.json()['QueryResponse'][qb_object]))
+
+    extra_runs = count_total // limit
+    for i in range(extra_runs):
+        extra_query = f'select * from {qb_object} maxresults {limit} STARTPOSITION {i * limit}'
+        extra_response = query_helper(extra_query)
+        new_df = pd.read_json (json.dumps(extra_response.json()['QueryResponse'][qb_object]))
+        df = pd.concat([df, new_df])
+    df.to_csv (f'{qb_object.lower()}.csv', index = None)
 
 if __name__ == '__main__':
     access_token = get_access_token()
