@@ -32,7 +32,7 @@ def query_helper(query):
     return response
 
 def main(access_token):
-    qb_object = 'Vendor'
+    qb_object = config.qb_object
     limit = 1000
     query_count = f'select Count(*) from {qb_object} maxresults {limit}'
     count_response = query_helper(query_count)
