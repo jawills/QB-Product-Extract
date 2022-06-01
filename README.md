@@ -2,7 +2,7 @@
 
 ## Tutorial
 
-To see a full YouTube video on how to operate this script, please watch here: youtube.com
+To see a full YouTube video on how to operate this script, please watch here: [youtube.com](https://youtu.be/-7kmQMZMQHU)
 
 ## Requirements
 - Python 3
